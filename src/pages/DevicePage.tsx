@@ -7,12 +7,16 @@ export default function DevicePage() {
         <button>← Takaisin</button>
       </Link>
 
-      <h1>Nosturi 1</h1>
+      <h1>Device Page</h1>
 
       <div className="device-details">
         <p>
-          <strong>Tyyppi:</strong> Nosturi
+          <strong>Type:</strong> Crane
         </p>
+      </div>
+
+      <div className="button-group">
+        <button>Muokkaa tietoja</button>
       </div>
 
       <hr />
