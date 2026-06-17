@@ -4,10 +4,10 @@ export default function Dashboard() {
     return (
         <div className="app">
             <div className="header">
-                <h1>Device Checklist</h1>
+                <h1>Dashboard</h1>
 
                 <Link to="/add-device">
-                    <button>Lisää laite</button>
+                    <button>Add Device</button>
                 </Link>
             </div>
 
@@ -22,6 +22,10 @@ export default function Dashboard() {
                 <h3>Generaattori 2</h3>
                 <p>6 / 9 tehtävää tehty</p>
             </div>
+
+            <Link to="/login">
+                <button>Login</button>
+            </Link>
         </div>
     );
 }
