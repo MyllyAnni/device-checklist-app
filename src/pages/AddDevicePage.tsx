@@ -3,6 +3,13 @@ import { Link } from "react-router-dom";
 export default function AddDevicePage() {
   return (
     <div className="app">
+
+      <div className="back-button">
+        <Link to="/">
+          <button>Takaisin</button>
+        </Link>
+      </div>
+
       <h1>Add Device Page</h1>
 
       <div className="form-group">
@@ -42,16 +49,12 @@ export default function AddDevicePage() {
       </div>
 
       <div className="button-group">
-        <button>Tallenna</button>
-
-        <Link to="/">
-          <button>Takaisin</button>
+        <Link to="/edit-checklist">
+          <button>Muokkaa checklistiä</button>
         </Link>
-      </div>
 
-      <Link to="/edit-checklist">
-        <button>Muokkaa checklistiä</button>
-      </Link>
+        <button>Tallenna laite</button>
+      </div>
 
     </div>
   );
