@@ -6,7 +6,7 @@ export default function AddDevicePage() {
 
       <div className="back-button">
         <Link to="/">
-          <button>Takaisin</button>
+          <button>← Back</button>
         </Link>
       </div>
 
@@ -50,10 +50,10 @@ export default function AddDevicePage() {
 
       <div className="button-group">
         <Link to="/edit-checklist">
-          <button>Muokkaa checklistiä</button>
+          <button>Edit Checklist</button>
         </Link>
 
-        <button>Tallenna laite</button>
+        <button>Save Device</button>
       </div>
 
     </div>

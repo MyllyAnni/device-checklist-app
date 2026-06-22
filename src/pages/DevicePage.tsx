@@ -4,7 +4,7 @@ export default function DevicePage() {
   return (
     <div className="app">
       <Link to="/">
-        <button>← Takaisin</button>
+        <button>← Back</button>
       </Link>
 
       <h1>Device Page</h1>
@@ -16,14 +16,14 @@ export default function DevicePage() {
       </div>
 
       <div className="button-group">
-        <button>Muokkaa tietoja</button>
+        <button>Edit Information</button>
       </div>
 
       <hr />
 
       <h2>Checklist</h2>
 
-      <p>Ei vielä toteutettu</p>
+      <p>Not implemented yet</p>
     </div>
   );
 }

@@ -4,57 +4,57 @@ export default function EditChecklistPage() {
     return (
         <div className="page-container">
             <Link to="/add-device" className="back-button">
-                <button>← Takaisin</button>
+                <button>← Back</button>
             </Link>
 
 
 
-            <h1>Muokkaa checklistiä</h1>
+            <h1>Edit Checklist</h1>
 
             <div className="checklist-container">
                 <div className="task-item">
                     <input type="checkbox" />
-                    <span>Tehtävä 1</span>
+                    <span>Task 1</span>
                 </div>
 
                 <div className="task-item">
                     <input type="checkbox" />
-                    <span>Tehtävä 2</span>
+                    <span>Task 2</span>
                 </div>
 
                 <div className="task-item">
                     <input type="checkbox" />
-                    <span>Tehtävä 3</span>
+                    <span>Task 3</span>
                 </div>
 
                 <div className="task-item">
                     <input type="checkbox" />
-                    <span>Tehtävä 4</span>
+                    <span>Task 4</span>
                 </div>
 
                 <div className="task-item">
                     <input type="checkbox" />
-                    <span>Tehtävä 5</span>
+                    <span>Task 5</span>
                 </div>
 
                 <div className="task-item">
                     <input type="checkbox" />
-                    <span>Tehtävä 6</span>
+                    <span>Task 6</span>
                 </div>
 
             </div>
 
             <div className="form-group">
-                <label>Uusi tehtävä</label>
+                <label>New Task</label>
                 <input
                     type="text"
-                    placeholder="Kirjoita tehtävä..."
+                    placeholder="Enter task..."
                 />
             </div>
 
             <div className="button-group">
-                <button>Lisää tehtävä</button>
-                <button>Tallenna checklist</button>
+                <button>Add Task</button>
+                <button>Save Checklist</button>
             </div>
         </div>
     );
