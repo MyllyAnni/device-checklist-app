@@ -98,7 +98,7 @@ export default function AddDevicePage() {
       </div>
 
       <div className="form-group">
-        <label>
+        <label className="checkbox-label">
           <input
             type="checkbox"
             checked={addDefaultChecklist}
@@ -106,7 +106,6 @@ export default function AddDevicePage() {
               setAddDefaultChecklist(e.target.checked)
             }
           />
-
           Add Default Checklist
         </label>
       </div>
@@ -122,23 +121,26 @@ export default function AddDevicePage() {
         />
       </div>
 
-      <button
-        onClick={() => {
-          if (newTask.trim() === "") return;
+      {newTask.trim() !== "" && (
+        <div className="task-button-row">
+          <button
+            className="small-button"
+            onClick={() => {
+              setAdditionalTasks([
+                ...additionalTasks,
+                {
+                  text: newTask,
+                  completed: false,
+                },
+              ]);
 
-          setAdditionalTasks([
-            ...additionalTasks,
-            {
-              text: newTask,
-              completed: false,
-            },
-          ]);
-
-          setNewTask("");
-        }}
-      >
-        Add Task
-      </button>
+              setNewTask("");
+            }}
+          >
+            Add Task
+          </button>
+        </div>
+      )}
 
       <div className="checklist-container">
         {additionalTasks.map((task, index) => (

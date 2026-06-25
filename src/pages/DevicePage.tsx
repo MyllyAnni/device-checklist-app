@@ -5,7 +5,7 @@ import { db } from "../firebase";
 
 type Task = {
   text: string;
-  completed: boolean;
+  completed: boolean; 
 };
 
 type Device = {
@@ -23,6 +23,18 @@ export default function DevicePage() {
 
   const [device, setDevice] =
     useState<Device | null>(null);
+  const [editMode, setEditMode] =
+    useState(false);
+  const [editedName, setEditedName] =
+    useState("");
+  const [editedType, setEditedType] =
+    useState("");
+  const [editedSerialNumber, setEditedSerialNumber] =
+    useState("");
+  const [editedTasks, setEditedTasks] =
+    useState<Task[]>([]);
+  const [newTaskText, setNewTaskText] =
+    useState("");
 
   useEffect(() => {
     const loadDevice = async () => {
@@ -54,6 +66,15 @@ export default function DevicePage() {
 
     loadDevice();
   }, [id]);
+
+  useEffect(() => {
+    if (!device) return;
+
+    setEditedName(device.name);
+    setEditedType(device.type);
+    setEditedSerialNumber(device.serialNumber);
+    setEditedTasks(device.tasks ?? []);
+  }, [device]);
 
   if (!device) {
     return <p>Loading...</p>;
@@ -97,52 +118,254 @@ export default function DevicePage() {
     }
   };
 
+  const saveDevice = async () => {
+    try {
+      await updateDoc(
+        doc(db, "devices", device.id),
+        {
+          name: editedName,
+          type: editedType,
+          serialNumber: editedSerialNumber,
+          tasks: editedTasks,
+        }
+      );
+
+      setDevice({
+        ...device,
+        name: editedName,
+        type: editedType,
+        serialNumber: editedSerialNumber,
+        tasks: editedTasks,
+      });
+      setEditMode(false);
+      alert("Device updated!");
+    } catch (error) {
+      console.error(
+        "Error saving device:",
+        error
+      );
+    }
+  };
+
+  const toggleEditedTask =
+    (taskIndex: number) => {
+      setEditedTasks((current) =>
+        current.map((task, index) => {
+          if (index === taskIndex) {
+            return {
+              ...task,
+              completed: !task.completed,
+            };
+          }
+
+          return task;
+        })
+      );
+    };
+
+  const updateEditedTaskText = (
+    taskIndex: number,
+    text: string
+  ) => {
+    setEditedTasks((current) =>
+      current.map((task, index) => {
+        if (index === taskIndex) {
+          return {
+            ...task,
+            text,
+          };
+        }
+
+        return task;
+      })
+    );
+  };
+
+  const deleteEditedTask =
+    (taskIndex: number) => {
+      setEditedTasks((current) =>
+        current.filter((_, index) => index !== taskIndex)
+      );
+    };
+
+  const addEditedTask = () => {
+    if (newTaskText.trim() === "") return;
+
+    setEditedTasks((current) => [
+      ...current,
+      {
+        text: newTaskText,
+        completed: false,
+      },
+    ]);
+    setNewTaskText("");
+  };
+
   return (
     <div className="app">
       <Link to="/">
         <button>← Back</button>
       </Link>
 
-      <h1>{device.name}</h1>
+      {editMode ? (
+        <h1>Edit Device</h1>
+      ) : (
+        <h1>{device.name}</h1>
+      )}
 
       <div className="device-details">
-        <p>
-          <strong>Type:</strong> {device.type}
-        </p>
-        <p>
-          <strong>Serial Number:</strong>{" "}
-          {device.serialNumber}
-        </p>
+        {editMode ? (
+          <>
+            <div className="form-group">
+              <label>Device Name</label>
+              <input
+                type="text"
+                value={editedName}
+                onChange={(e) =>
+                  setEditedName(e.target.value)
+                }
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Type</label>
+              <input
+                type="text"
+                value={editedType}
+                onChange={(e) =>
+                  setEditedType(e.target.value)
+                }
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Serial Number</label>
+              <input
+                type="text"
+                value={editedSerialNumber}
+                onChange={(e) =>
+                  setEditedSerialNumber(e.target.value)
+                }
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <p>
+              <strong>Type:</strong> {device.type}
+            </p>
+            <p>
+              <strong>Serial Number:</strong>{" "}
+              {device.serialNumber}
+            </p>
+          </>
+        )}
       </div>
 
 
 
       <div className="button-group">
-        <button>Edit Information</button>
+        {editMode ? (
+          <>
+            <button onClick={saveDevice}>
+              Save Changes
+            </button>
+            <button
+              onClick={() => {
+                setEditMode(false);
+                setEditedName(device.name);
+                setEditedType(device.type);
+                setEditedSerialNumber(device.serialNumber);
+                setEditedTasks(device.tasks ?? []);
+              }}
+            >
+              Cancel
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => setEditMode(true)}
+          >
+            Edit Device
+          </button>
+        )}
       </div>
 
-      <hr />
+      {editMode ? (
+        <>
+          <div className="checklist-container">
+            {editedTasks.map((task, index) => (
+              <div
+                key={index}
+                className="task-item"
+              >
+                <input
+                  type="checkbox"
+                  checked={task.completed}
+                  onChange={() =>
+                    toggleEditedTask(index)
+                  }
+                />
 
-      <h2>Checklist</h2>
+                <input
+                  type="text"
+                  value={task.text}
+                  onChange={(e) =>
+                    updateEditedTaskText(
+                      index,
+                      e.target.value
+                    )
+                  }
+                />
 
-      <div className="checklist-container">
-        {device.tasks.map((task, index) => (
-          <div
-            key={index}
-            className="task-item"
-          >
+                <button
+                  onClick={() =>
+                    deleteEditedTask(index)
+                  }
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div className="form-group">
             <input
-              type="checkbox"
-              checked={task.completed}
-              onChange={() =>
-                toggleTask(index)
+              type="text"
+              placeholder="Add new task"
+              value={newTaskText}
+              onChange={(e) =>
+                setNewTaskText(e.target.value)
               }
             />
-            
-            <span>{task.text}</span>
           </div>
-        ))}
-      </div>
+
+          <div className="button-group">
+            <button onClick={addEditedTask}>
+              Add Task
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="checklist-container">
+          {device.tasks.map((task, index) => (
+            <div
+              key={index}
+              className="task-item"
+            >
+              <input
+                type="checkbox"
+                checked={task.completed}
+                onChange={() =>
+                  toggleTask(index)
+                }
+              />
+
+              <span>{task.text}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
