@@ -1,8 +1,58 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "../firebase";
+
 export default function EditChecklistPage() {
+
+    type Task = {
+        text: string;
+        completed: boolean;
+    };
+
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [newTask, setNewTask] = useState("");
+
+    useEffect(() => {
+        const loadChecklist = async () => {
+            try {
+                const docRef = doc(db, "defaultChecklist", "checklist");
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+
+                    if (data.tasks) {
+                        setTasks(data.tasks);
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading checklist:", error);
+            }
+        };
+
+        loadChecklist();
+    }, []);
+
+    const saveChecklist = async () => {
+        try {
+            await setDoc(
+                doc(db, "defaultChecklist", "checklist"),
+                {
+                    tasks: tasks,
+                }
+            );
+
+            alert("Checklist saved!");
+        } catch (error) {
+            console.error("Error saving checklist:", error);
+        }
+    };
+
     return (
         <div className="page-container">
+
             <Link to="/add-device" className="back-button">
                 <button>← Back</button>
             </Link>
@@ -12,49 +62,53 @@ export default function EditChecklistPage() {
             <h1>Edit Checklist</h1>
 
             <div className="checklist-container">
-                <div className="task-item">
-                    <input type="checkbox" />
-                    <span>Task 1</span>
-                </div>
+                {tasks.map((task, index) => (
+                    <div key={index} className="task-item">
+                        <span>{task.text}</span>
 
-                <div className="task-item">
-                    <input type="checkbox" />
-                    <span>Task 2</span>
-                </div>
-
-                <div className="task-item">
-                    <input type="checkbox" />
-                    <span>Task 3</span>
-                </div>
-
-                <div className="task-item">
-                    <input type="checkbox" />
-                    <span>Task 4</span>
-                </div>
-
-                <div className="task-item">
-                    <input type="checkbox" />
-                    <span>Task 5</span>
-                </div>
-
-                <div className="task-item">
-                    <input type="checkbox" />
-                    <span>Task 6</span>
-                </div>
-
+                        <button
+                            onClick={() => {
+                                setTasks(tasks.filter((_, i) => i !== index));
+                            }}
+                        >
+                            Delete
+                        </button>
+                    </div>
+                ))}
             </div>
 
             <div className="form-group">
                 <label>New Task</label>
+
                 <input
                     type="text"
                     placeholder="Enter task..."
+                    value={newTask}
+                    onChange={(e) => setNewTask(e.target.value)}
                 />
             </div>
 
             <div className="button-group">
-                <button>Add Task</button>
-                <button>Save Checklist</button>
+                <button
+                    onClick={() => {
+                        if (newTask.trim() === "") return;
+
+                        setTasks([
+                            ...tasks,
+                            {
+                                text: newTask,
+                                completed: false,
+                            },
+                        ]);
+                        setNewTask("");
+                    }}
+                >
+                    Add Task
+                </button>
+
+                <button onClick={saveChecklist}>
+                    Save Checklist
+                </button>
             </div>
         </div>
     );
