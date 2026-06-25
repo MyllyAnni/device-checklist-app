@@ -58,28 +58,36 @@ export default function Dashboard() {
                     </Link>
                 </div>
 
-                {devices.map((device) => (
-                    <Link
-                        key={device.id}
-                        to={`/device/${device.id}`}
-                    >
+                <div className="cards-grid">
+                    {devices.map((device) => {
+                        const completed = device.tasks.filter((t) => t.completed).length;
+                        const total = device.tasks.length;
+                        let statusClass = "status-red";
 
-                        <div className="device-card">
-                            <h3>{device.name}</h3>
+                        if (total > 0 && completed === total) {
+                            statusClass = "status-green";
+                        } else if (completed > 0 && completed < total) {
+                            statusClass = "status-yellow";
+                        } else {
+                            statusClass = "status-red";
+                        }
 
-                            <p>
-                                {
-                                    device.tasks.filter(
-                                        (task) => task.completed
-                                    ).length
-                                }
-                                {" / "}
-                                {device.tasks.length}
-                                {" tasks done"}
-                            </p>
-                        </div>
-                    </Link>
-                ))}
+                        return (
+                            <Link key={device.id} to={`/device/${device.id}`}>
+                                <div className={`device-card ${statusClass}`}>
+                                    <h3>{device.name}</h3>
+
+                                    <p>
+                                        {completed}
+                                        {" / "}
+                                        {total}
+                                        {" tasks done"}
+                                    </p>
+                                </div>
+                            </Link>
+                        );
+                    })}
+                </div>
 
                 <Link to="/login">
                     <button>Login</button>

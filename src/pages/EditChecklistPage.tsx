@@ -78,11 +78,10 @@ export default function EditChecklistPage() {
             </div>
 
             <div className="form-group">
-                <label>New Task</label>
 
                 <input
                     type="text"
-                    placeholder="Enter task..."
+                    placeholder="Add new task..."
                     value={newTask}
                     onChange={(e) => setNewTask(e.target.value)}
                 />
