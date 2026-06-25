@@ -1,6 +1,51 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
+
+type Task = {
+    text: string;
+    completed: boolean;
+};
+
+type Device = {
+    id: string;
+    name: string;
+    type: string;
+    serialNumber: string;
+    tasks: Task[];
+};
 
 export default function Dashboard() {
+
+    const [devices, setDevices] = useState<Device[]>([]);
+
+    useEffect(() => {
+        const loadDevices = async () => {
+            try {
+                const querySnapshot = await getDocs(
+                    collection(db, "devices")
+                );
+
+                const loadedDevices: Device[] =
+                    querySnapshot.docs.map((doc) => ({
+                        id: doc.id,
+                        ...doc.data(),
+                    })) as Device[];
+
+                setDevices(loadedDevices);
+            } catch (error) {
+                console.error(
+                    "Error loading devices:",
+                    error
+                );
+            }
+        };
+
+        loadDevices();
+    }, []);
+
     return (
         <div className="app">
             <div className="page-header">
@@ -13,82 +58,28 @@ export default function Dashboard() {
                     </Link>
                 </div>
 
-                <Link to="/device">
-                    <div className="device-card">
-                        <h3>Nosturi 1</h3>
-                        <p>9 / 9 tasks done</p>
-                    </div>
-                </Link>
+                {devices.map((device) => (
+                    <Link
+                        key={device.id}
+                        to={`/device/${device.id}`}
+                    >
 
-                <Link to="/device">
-                    <div className="device-card">
-                        <h3>Laite 12</h3>
-                        <p>5 / 9 tasks done</p>
-                    </div>
-                </Link>
+                        <div className="device-card">
+                            <h3>{device.name}</h3>
 
-                <Link to="/device">
-                    <div className="device-card">
-                        <h3>Laite 99</h3>
-                        <p>3 / 9 tasks done</p>
-                    </div>
-                </Link>
-
-                <Link to="/device">
-                    <div className="device-card">
-                        <h3>Laite 22</h3>
-                        <p>0 / 9 tasks done</p>
-                    </div>
-                </Link>
-
-                <Link to="/device">
-                    <div className="device-card">
-                        <h3>Laite 20</h3>
-                        <p>2 / 9 tasks done</p>
-                    </div>
-                </Link>
-
-                <Link to="/device">
-                    <div className="device-card">
-                        <h3>Laite 4</h3>
-                        <p>9 / 9 tasks done</p>
-                    </div>
-                </Link>
-
-                <Link to="/device">
-                    <div className="device-card">
-                        <h3>Laite 2</h3>
-                        <p>9 / 9 tasks done</p>
-                    </div>
-                </Link>
-
-                <Link to="/device">
-                    <div className="device-card">
-                        <h3>Laite 9</h3>
-                        <p>4 / 9 tasks done</p>
-                    </div>
-                </Link>
-
-                <Link to="/device">
-                    <div className="device-card">
-                        <h3>Laite 8</h3>
-                        <p>6 / 9 tasks done</p>
-                    </div>
-                </Link>
-
-                <Link to="/device">
-                    <div className="device-card">
-                        <h3>Laite 2</h3>
-                        <p>7 / 9 tasks done</p>
-                    </div>
-                </Link>
-
-                <Link to="/device">
-                    <div className="device-card">
-                        <h3>Generaattori 2</h3>
-                        <p>6 / 9 tasks done</p>
-                    </div>
-                </Link>
+                            <p>
+                                {
+                                    device.tasks.filter(
+                                        (task) => task.completed
+                                    ).length
+                                }
+                                {" / "}
+                                {device.tasks.length}
+                                {" tasks done"}
+                            </p>
+                        </div>
+                    </Link>
+                ))}
 
                 <Link to="/login">
                     <button>Login</button>
