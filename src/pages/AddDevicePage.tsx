@@ -91,7 +91,7 @@ export default function AddDevicePage() {
 
         <input
           type="text"
-          placeholder="Esim. Nosturi 1"
+          placeholder=""
           value={serialNumber}
           onChange={(e) => setSerialNumber(e.target.value)}
         />

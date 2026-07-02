@@ -1,11 +1,12 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import { deleteDoc } from "firebase/firestore";
 
 type Task = {
   text: string;
-  completed: boolean; 
+  completed: boolean;
 };
 
 type Device = {
@@ -20,6 +21,7 @@ type Device = {
 export default function DevicePage() {
 
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [device, setDevice] =
     useState<Device | null>(null);
@@ -147,6 +149,29 @@ export default function DevicePage() {
     }
   };
 
+  const deleteDevice = async () => {
+    if (!device) return;
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this device?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await deleteDoc(doc(db, "devices", device.id));
+
+      alert("Device deleted!");
+
+      navigate("/");
+    } catch (error) {
+      console.error(
+        "Error deleting device:",
+        error
+      );
+    }
+  };
+
   const toggleEditedTask =
     (taskIndex: number) => {
       setEditedTasks((current) =>
@@ -262,14 +287,13 @@ export default function DevicePage() {
         )}
       </div>
 
-
-
       <div className="button-group">
         {editMode ? (
           <>
             <button onClick={saveDevice}>
               Save Changes
             </button>
+
             <button
               onClick={() => {
                 setEditMode(false);
@@ -280,6 +304,10 @@ export default function DevicePage() {
               }}
             >
               Cancel
+            </button>
+
+            <button onClick={deleteDevice}>
+              Delete Device
             </button>
           </>
         ) : (
