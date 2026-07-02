@@ -18,6 +18,11 @@ function App() {
         />
 
         <Route
+          path="/add-device/:id"
+          element={<AddDevicePage />}
+        />
+
+        <Route
           path="/device/:id"
           element={<DevicePage />}
         />
